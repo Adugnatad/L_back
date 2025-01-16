@@ -3,16 +3,68 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model user {
   id     Int         @id @default(autoincrement())
-  name   String      @db.VarChar(99)
-  email  String      @db.VarChar(99)
+  first_name String      @db.VarChar(99)
+  last_name String      @db.VarChar(99)
+  phone_number String      @db.VarChar(99)
+  email String      @db.VarChar(99) @unique
+  password String      @db.VarChar(99)
+  date_of_birth String     @db.VarChar(99)
   status user_status
 }
+
+model Requirement {
+  id          Int      @id @default(autoincrement())
+  description String  
+}
+
+model Purpose {
+  id    Int  @id @default(autoincrement())
+  title String       
+}
+
+model LoanType {
+  id          Int      @id @default(autoincrement())
+  name        String  
+  description String  
+  
+}
+
+model Loan {
+  id            String    @id @default(uuid()) // Primary key
+  type          String
+  amount        Float
+  status        String
+  date          DateTime
+  applicant     String
+  purpose       String
+  interestRate  Float
+  term          Int
+  stages        LoanStage[]
+  messages      LoanMessage[]
+}
+
+model LoanStage {
+  id        Int      @id @default(autoincrement()) // Primary key
+  name      String
+  status    String   // Enum-like field: "completed" | "in-progress" | "pending"
+  loanId    String
+  loan      Loan     @relation(fields: [loanId], references: [id])
+}
+
+model LoanMessage {
+  id        Int      @id @default(autoincrement()) // Primary key
+  message   String
+  date      DateTime
+  loanId    String
+  loan      Loan     @relation(fields: [loanId], references: [id])
+}
+
 
 enum user_status {
   active
