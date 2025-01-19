@@ -100,3 +100,67 @@ export const login = async (req: Request, res: Response) => {
     res.status(400).send("user not found!");
   }
 };
+
+export const updatePersonalInformation = async (
+  req: Request,
+  res: Response
+) => {
+  const { first_name, last_name, dateOfBirth, email, phoneNumber } = req.body;
+
+  try {
+    const user = await prisma.user.update({
+      where: { email },
+      data: {
+        first_name,
+        last_name,
+        date_of_birth: String(new Date(dateOfBirth)),
+        phone_number: phoneNumber,
+      },
+    });
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    console.error("Error updating personal information:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update personal information",
+    });
+  }
+};
+
+export const updatePassword = async (req: Request, res: Response) => {
+  const { email, currentPassword, newPassword } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const isPasswordValid = await checkHash(currentPassword, user.password);
+    if (!isPasswordValid) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Current password is incorrect" });
+    }
+
+    const hashedPassword = await hash(newPassword);
+    await prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error updating password:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to update password" });
+  }
+};

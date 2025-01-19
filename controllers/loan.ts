@@ -4,6 +4,17 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient();
 
 // Fetch loan details
+
+export const getLoans = async (req: Request, res: Response) => {
+  try {
+    const loans = await prisma.loan.findMany();
+    res.status(200).json(loans);
+  } catch (error) {
+    console.error("Error fetching loans:", error);
+    res.status(500).json({ error: "Failed to fetch loans" });
+  }
+};
+
 export const getLoanDetail = async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -16,6 +27,32 @@ export const getLoanDetail = async (req: Request, res: Response) => {
     res.status(200).json(loan);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch loan details" });
+  }
+};
+
+export const getTotalLoanAmount = async (req: Request, res: Response) => {
+  try {
+    const totalAmount = await prisma.loan.aggregate({
+      _sum: { amount: true },
+    });
+
+    res.status(200).json({ totalAmount: totalAmount._sum.amount || 0 });
+  } catch (error) {
+    console.error("Error fetching total loan amount:", error);
+    res.status(500).json({ error: "Failed to fetch total loan amount" });
+  }
+};
+
+export const getTotalPendingRequests = async (req: Request, res: Response) => {
+  try {
+    const totalPending = await prisma.loan.count({
+      where: { status: "pending" }, // Adjust status filter based on your schema
+    });
+
+    res.status(200).json({ totalPending });
+  } catch (error) {
+    console.error("Error fetching total pending requests:", error);
+    res.status(500).json({ error: "Failed to fetch total pending requests" });
   }
 };
 

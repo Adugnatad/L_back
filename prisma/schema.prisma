@@ -65,6 +65,47 @@ model LoanMessage {
   loan      Loan     @relation(fields: [loanId], references: [id])
 }
 
+model Otp {
+  id        String   @id @default(uuid())
+  otp       String
+  userId    String   // Link OTP to a user (if required)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+}
+
+model Package {
+  id              String  @id @default(uuid())
+  name            String
+  type            String
+  apr             Float
+  monthlyRepayment Float
+  totalCharge     Float
+  totalRepayable  Float
+}
+
+model Meeting {
+  id        String   @id @default(uuid())
+  date      String
+  time      String
+  purpose   String
+  createdAt DateTime @default(now())
+}
+
+model FundTransfer {
+  id         String   @id @default(uuid())
+  sourceBank String
+  amount     Float
+  purpose    String
+  createdAt  DateTime @default(now())
+}
+
+model PerformanceFeedback {
+  id         String   @id @default(uuid())
+  rating     Int
+  feedback   String
+  createdAt  DateTime @default(now())
+}
 
 enum user_status {
   active
