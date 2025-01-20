@@ -79,9 +79,7 @@ model Package {
   name            String
   type            String
   apr             Float
-  monthlyRepayment Float
-  totalCharge     Float
-  totalRepayable  Float
+ 
 }
 
 model Meeting {
