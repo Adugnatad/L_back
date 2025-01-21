@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import compression from "compression";
 import userRoutes from "../routers/user";

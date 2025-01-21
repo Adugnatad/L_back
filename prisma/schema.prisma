@@ -79,7 +79,7 @@ model Package {
   name            String
   type            String
   apr             Float
- 
+  max             Float
 }
 
 model Meeting {

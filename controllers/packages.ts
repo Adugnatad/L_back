@@ -22,7 +22,11 @@ export const getPackages = async (req: Request, res: Response) => {
     const loanAmount = parseFloat(amount);
     const loanTerm = parseInt(term, 10);
 
-    const result = packages.map((pkg) => {
+    const pck = await prisma.package.findMany({
+      where: { max: { gte: loanAmount } },
+    });
+
+    const result = pck.map((pkg) => {
       const monthlyRepayment =
         (pkg.apr * loanAmount) / 100 / 12 + loanAmount / loanTerm;
       const totalCharge = (pkg.apr * loanAmount) / 100;

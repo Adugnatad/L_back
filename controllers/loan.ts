@@ -46,7 +46,7 @@ export const getTotalLoanAmount = async (req: Request, res: Response) => {
 export const getTotalPendingRequests = async (req: Request, res: Response) => {
   try {
     const totalPending = await prisma.loan.count({
-      where: { status: "pending" }, // Adjust status filter based on your schema
+      where: { status: { in: ["Pending Approval", "Under Review"] } }, // Adjust status filter based on your schema
     });
 
     res.status(200).json({ totalPending });
