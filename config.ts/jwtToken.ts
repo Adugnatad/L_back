@@ -2,8 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { secret_key } from "../util/secrets";
 
+interface CustomRequest extends Request {
+  decoded?: string | object;
+}
+
 export const verifyToken = (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -15,6 +19,7 @@ export const verifyToken = (
 
   try {
     const decoded = jwt.verify(authToken, secret_key);
+    req.decoded = decoded;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });

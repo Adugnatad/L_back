@@ -1,10 +1,18 @@
 const express = require("express");
-import { setMeeting, pullFunds, giveRating } from "../controllers/rm";
+import { verifyToken } from "../config.ts/jwtToken";
+import {
+  setMeeting,
+  pullFunds,
+  giveRating,
+  getMeetings,
+} from "../controllers/rm";
 
 const router = express.Router();
 
-router.post("/meeting", setMeeting);
-router.post("/funds", pullFunds);
-router.post("/rating", giveRating);
+router.post("/meeting", verifyToken, setMeeting);
+router.post("/funds", verifyToken, pullFunds);
+router.post("/rating", verifyToken, giveRating);
+
+router.get("/get_meetings", verifyToken, getMeetings);
 
 export default router;

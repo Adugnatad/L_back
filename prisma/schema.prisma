@@ -11,7 +11,7 @@ model user {
   id     Int         @id @default(autoincrement())
   first_name String      @db.VarChar(99)
   last_name String      @db.VarChar(99)
-  phone_number String      @db.VarChar(99)
+  phone_number String      @db.VarChar(99) @unique
   email String      @db.VarChar(99) @unique
   password String      @db.VarChar(99)
   date_of_birth String     @db.VarChar(99)
@@ -84,14 +84,17 @@ model Package {
 
 model Meeting {
   id        String   @id @default(uuid())
+  phone_number String @db.VarChar(99)
   date      String
   time      String
+  type      MeetingType
   purpose   String
   createdAt DateTime @default(now())
 }
 
 model FundTransfer {
   id         String   @id @default(uuid())
+  phone_number String @db.VarChar(99)
   sourceBank String
   amount     Float
   purpose    String
@@ -100,12 +103,57 @@ model FundTransfer {
 
 model PerformanceFeedback {
   id         String   @id @default(uuid())
+  phone_number String @db.VarChar(99)
   rating     Int
   feedback   String
   createdAt  DateTime @default(now())
 }
 
+model KYC {
+  id                Int      @id @default(autoincrement())
+  fullName          String
+  gender            String
+  dateOfBirth       DateTime
+  maritalStatus     String
+  phoneNumber       String @unique
+  email             String
+  residentialStreet String
+  residentialCity   String
+  residentialSubCity String
+  residentialWoreda String?
+  mailingStreet     String?
+  mailingCity       String?
+  mailingSubCity    String?
+  mailingWoreda     String?
+  idType            String
+  idNumber          String
+  issuingAuthority  String
+  expiryDate        DateTime
+  occupation        String
+  employerName      String
+  employerAddress   String
+  income            Float
+  incomeFrequency   String
+  sourceOfIncome    String
+  tin               String
+  sameAsResidential Boolean
+  passportPhotoType String?
+  passportPhotoName String?
+  passportPhotoSize Int?
+  idScanType        String?
+  idScanName        String?
+  idScanSize        Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+
 enum user_status {
   active
   inactive
+}
+
+enum MeetingType {
+  video
+  in_person
 }

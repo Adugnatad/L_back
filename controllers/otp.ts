@@ -3,6 +3,10 @@ import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
+interface CustomRequest extends Request {
+  decoded?: { phone_number: string };
+}
+
 const generateOtp = (length: number = 6): string => {
   const digits = "0123456789";
   let otp = "";
@@ -12,15 +16,7 @@ const generateOtp = (length: number = 6): string => {
   return otp;
 };
 
-export const sendOtp = async (req: Request, res: Response) => {
-  const { userId } = req.body; // Replace with email or phone if needed
-
-  if (!userId) {
-    return res
-      .status(400)
-      .json({ success: false, message: "User ID is required" });
-  }
-
+export const sendOtp = async (req: CustomRequest, res: Response) => {
   try {
     // Generate a random OTP
     const otp = generateOtp(6);
@@ -30,13 +26,13 @@ export const sendOtp = async (req: Request, res: Response) => {
     await prisma.otp.create({
       data: {
         otp,
-        userId,
+        userId: req.decoded.phone_number,
         expiresAt,
       },
     });
 
     // Simulate sending OTP (via SMS, email, etc.)
-    console.log(`OTP for user ${userId}: ${otp}`); // Replace with actual send logic
+    console.log(`OTP for user ${req.decoded.phone_number}: ${otp}`); // Replace with actual send logic
 
     res.status(200).json({ success: true, message: "OTP sent successfully" });
   } catch (error) {

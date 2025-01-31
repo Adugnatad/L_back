@@ -1,11 +1,20 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
+interface CustomRequest extends Request {
+  decoded?: string | object;
+}
+
 // Fetch all requirements
-export const getRequirements = async (req: Request, res: Response) => {
+export const getRequirements = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
+    console.log(req.decoded);
     const requirements = await prisma.requirement.findMany();
     res.status(200).json(requirements);
   } catch (error) {

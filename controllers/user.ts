@@ -5,11 +5,15 @@ import jwt from "jsonwebtoken";
 import { secret_key } from "../util/secrets";
 import { check, validationResult } from "express-validator";
 
+interface CustomRequest extends Request {
+  decoded?: { phone_number: string };
+}
+
 const prisma = new PrismaClient();
 
 const generateToken = (username: string) => {
   const payload = {
-    username: username,
+    phone_number: username,
   };
   const token = jwt.sign(payload, secret_key, { expiresIn: "1h" });
   return token;
@@ -91,7 +95,7 @@ export const login = async (req: Request, res: Response) => {
   if (user) {
     const passwordCheck = checkHash(password, user.password);
     if (passwordCheck) {
-      const token = generateToken(user.email);
+      const token = generateToken(user.phone_number);
       res.status(200).json({ token });
     } else {
       res.status(401).send("Invalid Credentials");
@@ -102,19 +106,21 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const updatePersonalInformation = async (
-  req: Request,
+  req: CustomRequest,
   res: Response
 ) => {
-  const { first_name, last_name, dateOfBirth, email, phoneNumber } = req.body;
+  const { first_name, last_name, date_of_birth, email, phone_number } =
+    req.body;
 
   try {
     const user = await prisma.user.update({
-      where: { email },
+      where: { phone_number: req.decoded.phone_number },
       data: {
         first_name,
         last_name,
-        date_of_birth: String(new Date(dateOfBirth)),
-        phone_number: phoneNumber,
+        date_of_birth,
+        phone_number,
+        email: email,
       },
     });
     res.status(200).json({ success: true, user });
@@ -127,12 +133,12 @@ export const updatePersonalInformation = async (
   }
 };
 
-export const updatePassword = async (req: Request, res: Response) => {
-  const { email, currentPassword, newPassword } = req.body;
+export const updatePassword = async (req: CustomRequest, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
 
   try {
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { phone_number: req.decoded.phone_number },
     });
 
     if (!user) {
@@ -150,7 +156,7 @@ export const updatePassword = async (req: Request, res: Response) => {
 
     const hashedPassword = await hash(newPassword);
     await prisma.user.update({
-      where: { email },
+      where: { phone_number: req.decoded.phone_number },
       data: { password: hashedPassword },
     });
 
