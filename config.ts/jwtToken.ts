@@ -11,7 +11,9 @@ export const verifyToken = (
   res: Response,
   next: NextFunction
 ) => {
-  const authToken = req.header("Authorization")?.replace("Bearer ", "");
+  const authToken = req.header("Authorization")
+    ? req.header("Authorization")?.replace("Bearer ", "")
+    : req.cookies.Authorization;
 
   if (!authToken) {
     return res.status(401).json({ message: "Token not provided" });

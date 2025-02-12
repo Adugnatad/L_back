@@ -98,6 +98,7 @@ model FundTransfer {
   sourceBank String
   amount     Float
   purpose    String
+  status     PullRequestStatus
   createdAt  DateTime @default(now())
 }
 
@@ -156,4 +157,9 @@ enum user_status {
 enum MeetingType {
   video
   in_person
+}
+
+enum PullRequestStatus {
+  pending
+  completed
 }

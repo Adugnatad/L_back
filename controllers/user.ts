@@ -96,6 +96,11 @@ export const login = async (req: Request, res: Response) => {
     const passwordCheck = checkHash(password, user.password);
     if (passwordCheck) {
       const token = generateToken(user.phone_number);
+      res.cookie("Authorization", token, {
+        httpOnly: true, // Prevent access from JavaScript
+        secure: process.env.NODE_ENV === "production", // Set true in production (requires HTTPS)
+        sameSite: "strict", // Protect against CSRF
+      });
       res.status(200).json({ token });
     } else {
       res.status(401).send("Invalid Credentials");
@@ -103,6 +108,15 @@ export const login = async (req: Request, res: Response) => {
   } else {
     res.status(400).send("user not found!");
   }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  res.clearCookie("Authorization", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
 export const updatePersonalInformation = async (

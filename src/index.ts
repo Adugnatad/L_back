@@ -14,10 +14,15 @@ import rmRoutes from "../routers/rm";
 import kycRoutes from "../routers/kyc";
 import path from "path";
 
+var cookieParser = require("cookie-parser");
+
 const app = express();
+
 app.use(express.json());
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(compression());
+app.use(cookieParser());
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/user", userRoutes);
 app.use("/api/purpose", purposeRoutes);

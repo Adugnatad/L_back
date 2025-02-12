@@ -63,6 +63,7 @@ export const getLoanStages = async (req: Request, res: Response) => {
   try {
     const stages = await prisma.loanStage.findMany({
       where: { loanId: id },
+      orderBy: { id: "asc" },
     });
     res.status(200).json(stages);
   } catch (error) {

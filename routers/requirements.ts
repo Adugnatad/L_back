@@ -6,7 +6,7 @@ import {
   createRequirement,
 } from "../controllers/requirements";
 
-router.get("/getRequirements", getRequirements);
+router.get("/getRequirements", verifyToken, getRequirements);
 router.post("/createRequirements", createRequirement);
 
 export default router;
